@@ -1,0 +1,62 @@
+.vibe {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #8884;
+  border-radius: 16px;
+  text-align: left;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.vibe:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px #0002;
+}
+
+.vibe-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  font-size: 3.5rem;
+  background: linear-gradient(135deg, var(--vibe-color), #ffffff55);
+}
+
+.vibe-body {
+  padding: 1rem;
+}
+
+.vibe-category {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--vibe-color);
+  filter: brightness(0.7);
+}
+
+.vibe-title {
+  margin: 0.25rem 0 0.5rem;
+  font-size: 1.15rem;
+}
+
+.vibe-desc {
+  margin: 0 0 0.75rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  opacity: 0.8;
+}
+
+.vibe-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.75rem;
+}
+
+.vibe-tags li {
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  background: #8882;
+}

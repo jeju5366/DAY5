@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>제주 특산물 쇼핑몰</title>
+  <style>
+    :root {
+      --orange: #f57c00;
+      --orange-dark: #e65100;
+      --green: #2e7d32;
+      --bg: #fff8f0;
+      --card: #ffffff;
+      --text: #2b2118;
+      --muted: #7a6a5c;
+      --line: #eadccd;
+      --red: #d32f2f;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: system-ui, -apple-system, 'Segoe UI', 'Malgun Gothic', sans-serif; background: var(--bg); color: var(--text); }
+    button { font: inherit; cursor: pointer; border: 0; border-radius: 8px; padding: 0.5rem 0.9rem; background: var(--orange); color: #fff; }
+    button:hover { background: var(--orange-dark); }
+    button.ghost { background: transparent; color: var(--orange-dark); border: 1px solid var(--orange); }
+    button.ghost:hover { background: #f57c0015; }
+    button.danger { background: var(--red); }
+    button.small { padding: 0.25rem 0.6rem; font-size: 0.8rem; }
+    input, textarea { font: inherit; padding: 0.5rem 0.7rem; border: 1px solid var(--line); border-radius: 8px; background: #fff; color: var(--text); }
+    textarea { width: 100%; resize: vertical; }
+
+    header { position: sticky; top: 0; z-index: 10; background: #fff; border-bottom: 1px solid var(--line); }
+    .bar { max-width: 1100px; margin: 0 auto; padding: 0.7rem 1rem; display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; justify-content: space-between; }
+    .brand { font-size: 1.3rem; font-weight: 700; color: var(--orange-dark); }
+    nav { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+    nav button { background: transparent; color: var(--text); }
+    nav button.on { background: var(--orange); color: #fff; }
+    .me { display: flex; gap: 0.5rem; align-items: center; font-size: 0.9rem; }
+
+    main { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem 4rem; }
+    h2 { margin: 0 0 1rem; }
+    .hero { text-align: center; padding: 1.5rem 1rem; margin-bottom: 1.5rem; border-radius: 16px; background: linear-gradient(135deg, #ffe0b2, #fff3e0); }
+    .hero h1 { margin: 0 0 0.3rem; }
+    .hero p { margin: 0; color: var(--muted); }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.1rem; }
+    .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+    .thumb { height: 100px; display: flex; align-items: center; justify-content: center; font-size: 3.2rem; background: linear-gradient(135deg, #ffe0b2, #ffffff); }
+    .body { padding: 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+    .tag { font-size: 0.75rem; color: var(--green); font-weight: 600; }
+    .name { font-size: 1.05rem; font-weight: 700; }
+    .desc { font-size: 0.88rem; color: var(--muted); line-height: 1.45; }
+    .price { font-size: 1.15rem; font-weight: 700; color: var(--orange-dark); }
+    .stock { font-size: 0.8rem; color: var(--muted); }
+    .row { display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap; }
+    .row input[type=number] { width: 4.5rem; }
+    .like.on { background: #ffebee; border-color: var(--red); color: var(--red); }
+    .comments { border-top: 1px dashed var(--line); padding-top: 0.6rem; display: flex; flex-direction: column; gap: 0.4rem; }
+    .comment { font-size: 0.85rem; display: flex; justify-content: space-between; gap: 0.5rem; background: #fff8f0; padding: 0.4rem 0.6rem; border-radius: 8px; }
+    .comment b { margin-right: 0.4rem; }
+    .comment-form { display: flex; gap: 0.4rem; }
+    .comment-form input { flex: 1; min-width: 0; }
+
+    .panel { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 1rem; margin-bottom: 1rem; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.92rem; }
+    th, td { padding: 0.55rem 0.4rem; border-bottom: 1px solid var(--line); text-align: left; }
+    th { color: var(--muted); font-weight: 600; }
+    td.num, th.num { text-align: right; }
+    .total { text-align: right; font-size: 1.2rem; font-weight: 700; margin: 0.8rem 0; }
+    .badge { font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 999px; background: #e8f5e9; color: var(--green); }
+    .badge.returned { background: #eee; color: var(--muted); }
+    .order-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; align-items: center; margin-bottom: 0.5rem; }
+    .guest { display: flex; flex-direction: column; gap: 0.6rem; }
+    .entry { border: 1px solid var(--line); border-radius: 10px; padding: 0.7rem 0.9rem; background: #fff; }
+    .entry .meta { font-size: 0.8rem; color: var(--muted); display: flex; justify-content: space-between; margin-bottom: 0.3rem; }
+    .entry p { margin: 0; white-space: pre-wrap; word-break: break-word; }
+    .empty { text-align: center; color: var(--muted); padding: 2rem 0; }
+
+    dialog { border: 0; border-radius: 14px; padding: 1.4rem; width: min(360px, 92vw); box-shadow: 0 10px 40px #0004; }
+    dialog::backdrop { background: #0006; }
+    dialog form { display: flex; flex-direction: column; gap: 0.6rem; }
+    dialog h3 { margin: 0 0 0.3rem; }
+    .hint { font-size: 0.8rem; color: var(--muted); }
+
+    #toast { position: fixed; left: 50%; bottom: 1.5rem; transform: translateX(-50%); background: #333; color: #fff; padding: 0.7rem 1.1rem; border-radius: 10px; opacity: 0; pointer-events: none; transition: opacity 0.2s; max-width: 90vw; z-index: 50; }
+    #toast.show { opacity: 1; }
+    #toast.bad { background: var(--red); }
+    .setup { max-width: 560px; margin: 3rem auto; }
+    .setup form { display: flex; flex-direction: column; gap: 0.6rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="bar">
+      <div class="brand">🍊 제주 특산물 마켓</div>
+      <nav id="nav"></nav>
+      <div class="me" id="me"></div>
+    </div>
+  </header>
+
+  <main id="app"></main>
+
+  <dialog id="authDlg">
+    <form data-form="auth">
+      <h3>로그인 / 회원가입</h3>
+      <input type="email" name="email" placeholder="이메일" required autocomplete="email">
+      <input type="password" name="password" placeholder="비밀번호 (6자 이상)" required minlength="6" autocomplete="current-password">
+      <input type="text" name="nickname" placeholder="닉네임 (회원가입 시)" maxlength="20">
+      <div class="row">
+        <button type="submit" value="login">로그인</button>
+        <button type="submit" value="signup" class="ghost">회원가입</button>
+        <button type="button" class="ghost" data-act="close-auth">닫기</button>
+      </div>
+      <p class="hint">이메일 인증이 켜져 있으면 가입 후 메일의 링크를 눌러야 로그인돼요.</p>
+    </form>
+  </dialog>
+
+  <div id="toast"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+  <script>
+    const fromEnv = (v) => (v && !v.startsWith('%') ? v : '')
+    const DEFAULT_URL = fromEnv('%VITE_SUPABASE_URL%')
+    const DEFAULT_KEY = fromEnv('%VITE_SUPABASE_ANON_KEY%')
+
+    const $ = (s, r = document) => r.querySelector(s)
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+    const won = (n) => Number(n).toLocaleString('ko-KR') + '원'
+    const when = (t) => new Date(t).toLocaleString('ko-KR', { dateStyle: 'medium', timeStyle: 'short' })
+    const nameOf = (u) => u?.user_metadata?.nickname || u?.email?.split('@')[0] || '손님'
+
+    let sb = null
+    const S = {
+      user: null,
+      view: 'shop',
+      products: [],
+      likes: [],
+      comments: [],
+      guest: [],
+      cart: [],
+      orders: [],
+      open: new Set(),
+    }
+
+    let toastTimer
+    function toast(msg, bad = false) {
+      const t = $('#toast')
+      t.textContent = msg
+      t.className = 'show' + (bad ? ' bad' : '')
+      clearTimeout(toastTimer)
+      toastTimer = setTimeout(() => (t.className = ''), 2600)
+    }
+
+    function getCfg() {
+      try {
+        const c = JSON.parse(localStorage.getItem('jeju_sb') || '{}')
+        return { url: DEFAULT_URL || c.url || '', key: DEFAULT_KEY || c.key || '' }
+      } catch {
+        return { url: DEFAULT_URL, key: DEFAULT_KEY }
+      }
+    }
+
+    function renderSetup() {
+      $('#nav').innerHTML = ''
+      $('#me').innerHTML = ''
+      $('#app').innerHTML = `
+        <div class="panel setup">
+          <h2>Supabase 연결 설정</h2>
+          <p class="hint">Supabase &gt; Project Settings &gt; API 의 <b>Project URL</b>과 <b>anon public</b> 키를 입력하세요.
+          (anon 키는 브라우저에 공개돼도 되는 키이고, 데이터 보호는 RLS가 맡아요. service_role 키는 절대 넣지 마세요.)</p>
+          <form data-form="setup">
+            <input name="url" placeholder="https://xxxxxxxx.supabase.co" required>
+            <input name="key" placeholder="eyJ... (anon public key)" required>
+            <button type="submit">저장하고 시작</button>
+          </form>
+        </div>`
+    }
+
+    async function init() {
+      const { url, key } = getCfg()
+      if (!url || !key) return renderSetup()
+      if (!window.supabase) {
+        $('#app').innerHTML = '<div class="empty">Supabase 라이브러리를 불러오지 못했어요. 인터넷 연결을 확인하세요.</div>'
+        return
+      }
+      sb = window.supabase.createClient(url, key)
+      const { data } = await sb.auth.getSession()
+      S.user = data.session?.user ?? null
+      sb.auth.onAuthStateChange((_e, session) => {
+        S.user = session?.user ?? null
+        setTimeout(async () => {
+          await loadUserData()
+          render()
+        }, 0)
+      })
+      await Promise.all([loadPublic(), loadUserData()])
+      render()
+    }
+
+    async function loadPublic() {
+      const [p, l, c, g] = await Promise.all([
+        sb.from('jeju_products').select('*').order('id'),
+        sb.from('jeju_likes').select('product_id,user_id'),
+        sb.from('jeju_comments').select('*').order('created_at'),
+        sb.from('jeju_guestbook').select('*').order('created_at', { ascending: false }).limit(100),
+      ])
+      const err = p.error || l.error || c.error || g.error
+      if (err) toast('데이터를 불러오지 못했어요: ' + err.message + ' (SQL을 먼저 실행했나요?)', true)
+      S.products = p.data || []
+      S.likes = l.data || []
+      S.comments = c.data || []
+      S.guest = g.data || []
+    }
+
+    async function loadUserData() {
+      if (!S.user) {
+        S.cart = []
+        S.orders = []
+        return
+      }
+      const [c, o] = await Promise.all([
+        sb.from('jeju_cart_items').select('product_id,quantity').order('created_at'),
+        sb.from('jeju_orders').select('*, jeju_order_items(*)').order('created_at', { ascending: false }),
+      ])
+      if (c.error || o.error) toast((c.error || o.error).message, true)
+      S.cart = c.data || []
+      S.orders = o.data || []
+    }
+
+    async function reloadAll() {
+      await Promise.all([loadPublic(), loadUserData()])
+      render()
+    }
+
+    function requireLogin() {
+      if (S.user) return true
+      toast('로그인이 필요해요', true)
+      $('#authDlg').showModal()
+      return false
+    }
+
+    const product = (id) => S.products.find((p) => p.id === id)
+
+    function render() {
+      const keep = {}
+      document.querySelectorAll('#app input[id], #app textarea[id]').forEach((el) => (keep[el.id] = el.value))
+
+      const cartCount = S.cart.reduce((n, c) => n + c.quantity, 0)
+      const tabs = [
+        ['shop', '🛍️ 상품'],
+        ['cart', `🧺 장바구니${cartCount ? ` (${cartCount})` : ''}`],
+        ['orders', '📦 주문내역'],
+        ['guest', '📝 방명록'],
+      ]
+      $('#nav').innerHTML = tabs.map(([k, label]) => `<button class="${S.view === k ? 'on' : ''}" data-act="view" data-view="${k}">${label}</button>`).join('')
+      $('#me').innerHTML = S.user
+        ? `<span>👤 ${esc(nameOf(S.user))}님</span><button class="ghost small" data-act="logout">로그아웃</button>`
+        : `<button class="small" data-act="open-auth">로그인 / 회원가입</button>`
+
+      const views = { shop: shopView, cart: cartView, orders: ordersView, guest: guestView }
+      $('#app').innerHTML = views[S.view]()
+
+      Object.entries(keep).forEach(([id, v]) => {
+        const el = document.getElementById(id)
+        if (el) el.value = v
+      })
+    }
+
+    function shopView() {
+      if (!S.products.length) return '<div class="empty">상품이 없어요. supabase/jeju-shop.sql 을 SQL Editor에서 실행했는지 확인하세요.</div>'
+      const cards = S.products.map((p) => {
+        const likeCnt = S.likes.filter((l) => l.product_id === p.id).length
+        const liked = S.user && S.likes.some((l) => l.product_id === p.id && l.user_id === S.user.id)
+        const cms = S.comments.filter((c) => c.product_id === p.id)
+        const open = S.open.has(p.id)
+        const soldOut = p.stock <= 0
+        const cmHtml = open
+          ? `<div class="comments">
+              ${cms.map((c) => `<div class="comment"><span><b>${esc(c.author_name)}</b>${esc(c.content)}</span>${S.user && c.user_id === S.user.id ? `<button class="danger small" data-act="del-comment" data-id="${c.id}">삭제</button>` : ''}</div>`).join('') || '<div class="hint">첫 댓글을 남겨보세요.</div>'}
+              <form class="comment-form" data-form="comment" data-pid="${p.id}">
+                <input id="cm-${p.id}" name="content" placeholder="댓글 입력" maxlength="500" required>
+                <button class="small" type="submit">등록</button>
+              </form>
+            </div>`
+          : ''
+        return `
+          <div class="card">
+            <div class="thumb">${esc(p.emoji)}</div>
+            <div class="body">
+              <span class="tag">${esc(p.category)}</span>
+              <div class="name">${esc(p.name)}</div>
+              <div class="desc">${esc(p.description)}</div>
+              <div class="price">${won(p.price)}</div>
+              <div class="stock">${soldOut ? '품절' : `재고 ${p.stock}개`}</div>
+              <div class="row">
+                <input type="number" id="q-${p.id}" value="1" min="1" max="${Math.max(p.stock, 1)}" ${soldOut ? 'disabled' : ''}>
+                <button class="ghost small" data-act="add-cart" data-pid="${p.id}" ${soldOut ? 'disabled' : ''}>장바구니</button>
+                <button class="small" data-act="buy" data-pid="${p.id}" ${soldOut ? 'disabled' : ''}>바로구매</button>
+              </div>
+              <div class="row">
+                <button class="ghost small like ${liked ? 'on' : ''}" data-act="like" data-pid="${p.id}">${liked ? '❤️' : '🤍'} ${likeCnt}</button>
+                <button class="ghost small" data-act="toggle-comments" data-pid="${p.id}">💬 댓글 ${cms.length}</button>
+              </div>
+              ${cmHtml}
+            </div>
+          </div>`
+      })
+      return `
+        <div class="hero"><h1>제주에서 바로 보내드려요 🌴</h1><p>한라봉부터 흑돼지까지, 제주 특산물 10선</p></div>
+        <div class="grid">${cards.join('')}</div>`
+    }
+
+    function cartView() {
+      if (!S.user) return '<div class="empty">로그인하면 장바구니를 사용할 수 있어요.</div>'
+      const rows = S.cart
+        .map((c) => ({ c, p: product(c.product_id) }))
+        .filter((r) => r.p)
+      if (!rows.length) return '<div class="empty">장바구니가 비어 있어요 🧺</div>'
+      const total = rows.reduce((s, r) => s + r.p.price * r.c.quantity, 0)
+      return `
+        <h2>장바구니</h2>
+        <div class="panel">
+          <table>
+            <tr><th>상품</th><th class="num">단가</th><th>수량</th><th class="num">금액</th><th></th></tr>
+            ${rows.map(({ c, p }) => `
+              <tr>
+                <td>${esc(p.emoji)} ${esc(p.name)}</td>
+                <td class="num">${won(p.price)}</td>
+                <td><input type="number" value="${c.quantity}" min="1" max="${p.stock}" style="width:4.5rem" data-act-change="cart-qty" data-pid="${p.id}"></td>
+                <td class="num">${won(p.price * c.quantity)}</td>
+                <td><button class="danger small" data-act="cart-del" data-pid="${p.id}">삭제</button></td>
+              </tr>`).join('')}
+          </table>
+          <div class="total">합계 ${won(total)}</div>
+          <div style="text-align:right"><button data-act="checkout">주문하기</button></div>
+        </div>`
+    }
+
+    function ordersView() {
+      if (!S.user) return '<div class="empty">로그인하면 주문내역을 볼 수 있어요.</div>'
+      if (!S.orders.length) return '<div class="empty">주문내역이 없어요 📦</div>'
+      return `<h2>주문내역</h2>` + S.orders.map((o) => {
+        const paid = o.status === 'paid'
+        const items = o.jeju_order_items || []
+        return `
+          <div class="panel">
+            <div class="order-head">
+              <div><span class="badge ${paid ? '' : 'returned'}">${paid ? '결제완료' : '반품완료'}</span> ${when(o.created_at)}</div>
+              <div>${paid ? `<button class="danger small" data-act="return" data-oid="${o.id}">반품</button>` : `<span class="hint">${o.returned_at ? when(o.returned_at) + ' 반품' : ''}</span>`}</div>
+            </div>
+            <table>
+              <tr><th>상품</th><th class="num">단가</th><th class="num">수량</th><th class="num">금액(단가×수량)</th><th></th></tr>
+              ${items.map((i) => `
+                <tr>
+                  <td>${esc(i.product_name)}</td>
+                  <td class="num">${won(i.unit_price)}</td>
+                  <td class="num">${i.quantity}</td>
+                  <td class="num">${won(i.line_total)}</td>
+                  <td>${paid ? `<button class="ghost small" data-act="edit-item" data-iid="${i.id}" data-qty="${i.quantity}">수량 수정</button>` : ''}</td>
+                </tr>`).join('')}
+            </table>
+            <div class="total">총 결제금액 ${won(o.total_price)}</div>
+          </div>`
+      }).join('')
+    }
+
+    function guestView() {
+      return `
+        <h2>방명록</h2>
+        <div class="panel">
+          <form data-form="guest">
+            <textarea id="guest-text" name="content" rows="3" maxlength="500" placeholder="제주 특산물에 대한 한마디를 남겨주세요" required></textarea>
+            <div style="text-align:right;margin-top:0.5rem"><button type="submit">남기기</button></div>
+          </form>
+        </div>
+        <div class="guest">
+          ${S.guest.map((g) => `
+            <div class="entry">
+              <div class="meta"><span><b>${esc(g.author_name)}</b> · ${when(g.created_at)}</span>${S.user && g.user_id === S.user.id ? `<button class="danger small" data-act="del-guest" data-id="${g.id}">삭제</button>` : ''}</div>
+              <p>${esc(g.content)}</p>
+            </div>`).join('') || '<div class="empty">아직 방명록이 없어요.</div>'}
+        </div>`
+    }
+
+    async function run(fn, okMsg) {
+      const { error } = await fn()
+      if (error) return toast(error.message, true), false
+      if (okMsg) toast(okMsg)
+      return true
+    }
+
+    const qtyOf = (pid) => Math.max(1, parseInt(document.getElementById('q-' + pid)?.value, 10) || 1)
+
+    const actions = {
+      view(el) { S.view = el.dataset.view; render() },
+      'open-auth'() { $('#authDlg').showModal() },
+      'close-auth'() { $('#authDlg').close() },
+      async logout() {
+        await sb.auth.signOut()
+        toast('로그아웃 했어요')
+      },
+
+      async 'add-cart'(el) {
+        if (!requireLogin()) return
+        const pid = Number(el.dataset.pid)
+        const add = qtyOf(pid)
+        const cur = S.cart.find((c) => c.product_id === pid)
+        const ok = cur
+          ? await run(() => sb.from('jeju_cart_items').update({ quantity: cur.quantity + add }).eq('product_id', pid), '장바구니에 담았어요')
+          : await run(() => sb.from('jeju_cart_items').insert({ product_id: pid, quantity: add }), '장바구니에 담았어요')
+        if (ok) { await loadUserData(); render() }
+      },
+      async buy(el) {
+        if (!requireLogin()) return
+        const pid = Number(el.dataset.pid)
+        const p = product(pid)
+        const qty = qtyOf(pid)
+        if (!confirm(`${p.name} ${qty}개를 ${won(p.price * qty)}에 구매할까요?`)) return
+        if (await run(() => sb.rpc('jeju_buy_now', { p_product: pid, p_qty: qty }), '주문이 완료됐어요 🎉')) {
+          S.view = 'orders'
+          await reloadAll()
+        }
+      },
+      async 'cart-del'(el) {
+        if (await run(() => sb.from('jeju_cart_items').delete().eq('product_id', Number(el.dataset.pid)))) {
+          await loadUserData(); render()
+        }
+      },
+      async checkout() {
+        if (!confirm('장바구니 상품을 모두 주문할까요?')) return
+        if (await run(() => sb.rpc('jeju_place_order'), '주문이 완료됐어요 🎉')) {
+          S.view = 'orders'
+          await reloadAll()
+        }
+      },
+      async return(el) {
+        if (!confirm('이 주문을 반품할까요? 재고가 복구되고 주문이 반품 처리돼요.')) return
+        if (await run(() => sb.rpc('jeju_return_order', { p_order: el.dataset.oid }), '반품 처리했어요')) await reloadAll()
+      },
+      async 'edit-item'(el) {
+        const input = prompt('변경할 수량을 입력하세요', el.dataset.qty)
+        if (input === null) return
+        const qty = parseInt(input, 10)
+        if (!qty || qty < 1) return toast('1 이상의 숫자를 입력하세요', true)
+        if (await run(() => sb.rpc('jeju_update_order_item', { p_item: el.dataset.iid, p_qty: qty }), '수량을 수정했어요')) await reloadAll()
+      },
+
+      async like(el) {
+        if (!requireLogin()) return
+        const pid = Number(el.dataset.pid)
+        const liked = S.likes.some((l) => l.product_id === pid && l.user_id === S.user.id)
+        const ok = liked
+          ? await run(() => sb.from('jeju_likes').delete().eq('product_id', pid).eq('user_id', S.user.id))
+          : await run(() => sb.from('jeju_likes').insert({ product_id: pid }))
+        if (ok) { await loadPublic(); render() }
+      },
+      'toggle-comments'(el) {
+        const pid = Number(el.dataset.pid)
+        S.open.has(pid) ? S.open.delete(pid) : S.open.add(pid)
+        render()
+      },
+      async 'del-comment'(el) {
+        if (await run(() => sb.from('jeju_comments').delete().eq('id', el.dataset.id))) { await loadPublic(); render() }
+      },
+      async 'del-guest'(el) {
+        if (await run(() => sb.from('jeju_guestbook').delete().eq('id', el.dataset.id))) { await loadPublic(); render() }
+      },
+    }
+
+    document.addEventListener('click', (e) => {
+      const el = e.target.closest('[data-act]')
+      if (el && actions[el.dataset.act]) actions[el.dataset.act](el)
+    })
+
+    document.addEventListener('change', async (e) => {
+      const el = e.target.closest('[data-act-change="cart-qty"]')
+      if (!el) return
+      const qty = parseInt(el.value, 10)
+      if (!qty || qty < 1) return render()
+      if (await run(() => sb.from('jeju_cart_items').update({ quantity: qty }).eq('product_id', Number(el.dataset.pid)))) {
+        await loadUserData(); render()
+      }
+    })
+
+    document.addEventListener('submit', async (e) => {
+      const form = e.target.closest('form[data-form]')
+      if (!form) return
+      e.preventDefault()
+      const f = new FormData(form)
+      const kind = form.dataset.form
+
+      if (kind === 'setup') {
+        localStorage.setItem('jeju_sb', JSON.stringify({ url: f.get('url').trim(), key: f.get('key').trim() }))
+        return init()
+      }
+
+      if (kind === 'auth') {
+        const email = f.get('email').trim()
+        const password = f.get('password')
+        if (e.submitter?.value === 'signup') {
+          const nickname = (f.get('nickname') || '').trim() || email.split('@')[0]
+          const { data, error } = await sb.auth.signUp({ email, password, options: { data: { nickname } } })
+          if (error) return toast(error.message, true)
+          $('#authDlg').close()
+          return toast(data.session ? '가입 완료! 환영해요 🎉' : '가입 완료! 이메일 인증 메일을 확인해주세요 ✉️')
+        }
+        const { error } = await sb.auth.signInWithPassword({ email, password })
+        if (error) return toast(error.message, true)
+        $('#authDlg').close()
+        form.reset()
+        return toast('로그인 했어요')
+      }
+
+      if (!requireLogin()) return
+      const content = (f.get('content') || '').trim()
+      if (!content) return
+
+      if (kind === 'comment') {
+        const pid = Number(form.dataset.pid)
+        if (await run(() => sb.from('jeju_comments').insert({ product_id: pid, author_name: nameOf(S.user), content }))) {
+          document.getElementById('cm-' + pid).value = ''
+          await loadPublic(); render()
+        }
+      }
+      if (kind === 'guest') {
+        if (await run(() => sb.from('jeju_guestbook').insert({ author_name: nameOf(S.user), content }), '방명록을 남겼어요')) {
+          document.getElementById('guest-text').value = ''
+          await loadPublic(); render()
+        }
+      }
+    })
+
+    init()
+  </script>
+</body>
+</html>
